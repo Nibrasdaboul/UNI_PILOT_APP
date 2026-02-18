@@ -1,0 +1,15 @@
+# Render Blueprint: one Web Service (API + frontend) for UniPilot
+# Use this if your GitHub repo root IS frontend-vite. Otherwise use parent folder's render.yaml with rootDir: frontend-vite.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: unipilot
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add in Dashboard: VITE_BACKEND_URL = https://YOUR-SERVICE.onrender.com
+      # Add in Dashboard: GROQ_API_KEY = your_groq_api_key
