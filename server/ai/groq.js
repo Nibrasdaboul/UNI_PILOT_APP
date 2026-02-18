@@ -23,6 +23,8 @@ function getGroqKey() {
   return '';
 }
 
+const MODEL = 'llama-3.3-70b-versatile';
+
 function getClient() {
   const key = getGroqKey();
   if (!key) return null;
