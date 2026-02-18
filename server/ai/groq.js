@@ -7,6 +7,7 @@ import { readFileSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
+const MODEL = 'llama-3.3-70b-versatile';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const GROQ_KEY_FILE = join(__dirname, '..', 'groq-key.txt');
 const PLACEHOLDER = 'PASTE_YOUR_GROQ_KEY_HERE';
@@ -22,8 +23,6 @@ function getGroqKey() {
   } catch (_) {}
   return '';
 }
-
-const MODEL = 'llama-3.3-70b-versatile';
 
 function getClient() {
   const key = getGroqKey();
