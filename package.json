@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "vite build",
-    "build:analyze": "cross-env ANALYZE=true vite build",
+    "build": "npx vite build",
+    "build:analyze": "cross-env ANALYZE=true npx vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
     "seed": "node server/seed.js",
