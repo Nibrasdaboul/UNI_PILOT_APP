@@ -4,7 +4,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+# Install all deps (including dev) so Vite/PostCSS/Tailwind can build
+RUN npm ci
 
 COPY . .
 ARG VITE_BACKEND_URL=/api
