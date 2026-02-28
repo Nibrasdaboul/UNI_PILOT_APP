@@ -1,0 +1,40 @@
+# UniPilot — local run with PostgreSQL
+# Usage: set VITE_BACKEND_URL=http://localhost:3000 (or your API URL), then:
+#   docker-compose up -d
+#   Open http://localhost:3000
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        VITE_BACKEND_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://unipilot:unipilot@db:5432/unipilot
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: unipilot
+      POSTGRES_PASSWORD: unipilot
+      POSTGRES_DB: unipilot
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U unipilot -d unipilot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata: {}
