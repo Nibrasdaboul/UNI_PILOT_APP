@@ -1,0 +1,190 @@
+# UniPilot API — OpenAPI 3.0 (subset)
+# Full reference: see API_OVERVIEW.md and server/routes/*.js
+
+openapi: 3.0.3
+info:
+  title: UniPilot API
+  description: Student dashboard and admin API. All protected routes require Authorization Bearer token.
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: API base path
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [Public]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+
+  /ready:
+    get:
+      summary: Readiness (DB check)
+      tags: [Public]
+      responses:
+        '200':
+          description: Ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ready }
+                  database: { type: string, example: connected }
+        '503':
+          description: Not ready
+
+  /auth/login:
+    post:
+      summary: Login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Returns access_token and user
+        '400':
+          description: Validation error
+        '429':
+          description: Rate limit
+
+  /auth/register:
+    post:
+      summary: Register
+      tags: [Auth]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                full_name: { type: string }
+      responses:
+        '200':
+          description: Returns access_token and user
+        '400':
+          description: Validation error
+        '429':
+          description: Rate limit
+
+  /auth/me:
+    get:
+      summary: Current user
+      tags: [Auth]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: User object
+        '401':
+          description: Unauthorized
+
+  /dashboard/summary:
+    get:
+      summary: Dashboard data (courses, GPA, tasks)
+      tags: [Dashboard]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Summary object
+        '401':
+          description: Unauthorized
+
+  /planner/daily:
+    get:
+      summary: Events and tasks for a date
+      tags: [Planner]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: date
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Daily events and tasks
+        '401':
+          description: Unauthorized
+
+  /billing/plans:
+    get:
+      summary: List plans (public)
+      tags: [Billing]
+      responses:
+        '200':
+          description: Plans with price_id for Pro/Student
+
+  /billing/me:
+    get:
+      summary: Current user subscription and usage
+      tags: [Billing]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: plan_id, ai_used, ai_remaining, subscription
+        '401':
+          description: Unauthorized
+
+  /billing/checkout:
+    post:
+      summary: Create Stripe Checkout session
+      tags: [Billing]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [price_id, success_url, cancel_url]
+              properties:
+                price_id: { type: string }
+                success_url: { type: string }
+                cancel_url: { type: string }
+      responses:
+        '200':
+          description: Returns url and session_id
+        '503':
+          description: Billing not configured
+
+  /billing/portal:
+    post:
+      summary: Create Stripe Customer Portal session
+      tags: [Billing]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                return_url: { type: string }
+      responses:
+        '200':
+          description: Returns url
+        '401':
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,27 @@
+# Render Blueprint — UniPilot (Web Service + PostgreSQL)
+# ربط المستودع من GitHub ثم النشر. المتغيرات الإجبارية تُضبط في Dashboard.
+# Docs: https://render.com/docs/blueprint-spec | دليل عربي: docs/RENDER_DEPLOY_AR.md
+
+databases:
+  - name: unipilot-db
+    plan: free
+
+services:
+  - type: web
+    name: unipilot
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: unipilot-db
+          property: connectionString
+      # إجباري — يُضبط في Dashboard:
+      # JWT_SECRET (32+ حرف)، VITE_BACKEND_URL (رابط التطبيق الكامل)، APP_URL (نفس الرابط)، FRONTEND_ORIGIN (نفس الرابط أو CORS)
+      # اختياري — الدفع والذكاء الاصطناعي:
+      # STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY, STRIPE_PRO_PLAN_PRICE_ID, STRIPE_STUDENT_PLAN_PRICE_ID
+      # GROQ_API_KEY (للذكاء الاصطناعي)
+      # اختياري — مراقبة: SENTRY_DSN, POSTHOG_API_KEY, REDIS_URL, LOG_LEVEL
