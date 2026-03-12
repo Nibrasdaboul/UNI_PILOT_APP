@@ -1,6 +1,0 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Allow: /
-
-# Sitemap (replace BASE_URL with your production URL, e.g. https://unipilot.onrender.com)
-Sitemap: /sitemap.xml
