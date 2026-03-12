@@ -1,6 +1,6 @@
-# Render Blueprint — UniPilot (Web Service + PostgreSQL)
-# ربط المستودع من GitHub ثم النشر. المتغيرات الإجبارية تُضبط في Dashboard.
-# Docs: https://render.com/docs/blueprint-spec | دليل عربي: docs/RENDER_DEPLOY_AR.md
+# Render Blueprint: one Web Service (API + frontend) for UniPilot
+# Docs: https://render.com/docs/blueprint-spec
+# Set in Dashboard: JWT_SECRET (min 32 chars), VITE_BACKEND_URL (your app URL), GROQ_API_KEY (for AI)
 
 databases:
   - name: unipilot-db
@@ -10,6 +10,7 @@ services:
   - type: web
     name: unipilot
     runtime: node
+    rootDir: frontend-vite
     buildCommand: npm install && npm run build
     startCommand: node server/index.js
     envVars:
@@ -19,9 +20,6 @@ services:
         fromDatabase:
           name: unipilot-db
           property: connectionString
-      # إجباري — يُضبط في Dashboard:
-      # JWT_SECRET (32+ حرف)، VITE_BACKEND_URL (رابط التطبيق الكامل)، APP_URL (نفس الرابط)، FRONTEND_ORIGIN (نفس الرابط أو CORS)
-      # اختياري — الدفع والذكاء الاصطناعي:
-      # STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY, STRIPE_PRO_PLAN_PRICE_ID, STRIPE_STUDENT_PLAN_PRICE_ID
-      # GROQ_API_KEY (للذكاء الاصطناعي)
-      # اختياري — مراقبة: SENTRY_DSN, POSTHOG_API_KEY, REDIS_URL, LOG_LEVEL
+      # Set in Dashboard: VITE_BACKEND_URL = https://unipilot.onrender.com (your URL)
+      # Set in Dashboard: JWT_SECRET = strong random string (min 32 chars)
+      # Set in Dashboard: GROQ_API_KEY = your_groq_api_key (optional, for AI)
